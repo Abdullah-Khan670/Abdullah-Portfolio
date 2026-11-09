@@ -90,10 +90,10 @@ form{grid-template-columns:1fr}}
 </div></div></section>
 
 <section id="contact" class="alt"><div class="wrap center"><h2>Contact Me</h2>
-<p>Have a photo to edit or a page to manage? Send me a message and it opens in your email app.</p>
+<p>Have a photo to edit or a page to manage? Send me a message and it will land straight in my inbox.</p>
 <form id="form"><input id="n" placeholder="Full name" required><input id="e" type="email" placeholder="Your email" required>
 <input id="p" placeholder="Mobile number"><input id="s" placeholder="Subject" required>
-<textarea id="m" placeholder="Your message" required></textarea><button class="btn" type="submit">Send Message</button></form></div></section>
+<textarea id="m" placeholder="Your message" required></textarea><button class="btn" type="submit">Send Message</button></form><p id="status" role="status" style="margin-top:1rem;color:var(--acc);font-weight:500"></p></div></section>
 
 <footer><span>&copy; 2026 Abdullah Khan. All rights reserved.</span><a href="#home" aria-label="Back to top">&uarr;</a></footer>
 
@@ -109,7 +109,13 @@ nav.onclick=function(){nav.classList.remove("open")};
 var links=[].slice.call(nav.querySelectorAll("a")),secs=links.map(function(a){return document.querySelector(a.getAttribute("href"))});
 function spy(){var y=window.scrollY+120,k=0;secs.forEach(function(s,i){if(s.offsetTop<=y)k=i});links.forEach(function(a,i){a.classList.toggle("on",i==k)})}
 window.addEventListener("scroll",spy);spy();
-document.getElementById("form").onsubmit=function(ev){ev.preventDefault();var g=function(i){return document.getElementById(i).value};
-var body="Name: "+g("n")+"\nEmail: "+g("e")+"\nMobile: "+g("p")+"\n\n"+g("m");
-location.href="mailto:abdullahkhanft5@gmail.com?subject="+encodeURIComponent(g("s"))+"&body="+encodeURIComponent(body)};
+var form=document.getElementById("form"),st=document.getElementById("status"),btn=form.querySelector("button");
+form.onsubmit=function(ev){ev.preventDefault();var g=function(i){return document.getElementById(i).value};
+btn.disabled=true;btn.textContent="Sending...";st.textContent="";
+fetch("https://api.web3forms.com/submit",{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},
+body:JSON.stringify({access_key:"b00dc916-bd8f-4568-91c8-8c7301c2e5f0",name:g("n"),email:g("e"),phone:g("p"),subject:g("s"),message:g("m"),from_name:"Portfolio Website"})})
+.then(function(r){return r.json()}).then(function(d){
+if(d.success){st.textContent="Thank you! Your message has been sent.";form.reset()}else{st.textContent="Something went wrong. Please try again or email me directly."}})
+.catch(function(){st.textContent="Network error. Please try again or email me directly."})
+.finally(function(){btn.disabled=false;btn.textContent="Send Message"})};
 </script></body></html>
